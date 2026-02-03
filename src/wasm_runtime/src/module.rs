@@ -101,6 +101,8 @@ fn init_wasm_runtime() -> Result<Vec<u8>> {
     config.with_custom_code_memory(Some(alloc::sync::Arc::new(platform::WasmtimeCodeMemory {})));
     #[cfg(gdb)]
     config.debug_info(true);
+    #[cfg(pulley)]
+    config.target("pulley64");
     let engine = Engine::new(&config)?;
     let mut linker = Linker::new(&engine);
     wasip1::register_handlers(&mut linker)?;

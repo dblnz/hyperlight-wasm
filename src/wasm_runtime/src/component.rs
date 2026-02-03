@@ -111,6 +111,8 @@ pub extern "C" fn hyperlight_main() {
     config.with_custom_code_memory(Some(alloc::sync::Arc::new(platform::WasmtimeCodeMemory {})));
     #[cfg(gdb)]
     config.debug_info(true);
+    #[cfg(pulley)]
+    config.target("pulley64");
     let engine = Engine::new(&config).unwrap();
     let linker = Linker::new(&engine);
     *CUR_ENGINE.lock() = Some(engine);
