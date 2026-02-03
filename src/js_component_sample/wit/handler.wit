@@ -1,0 +1,18 @@
+package hyperlight:bench;
+
+interface handler-interface {
+    record request {
+        uri: string
+    }
+
+    handleevent: func(event: request) -> request;
+}
+
+interface host-interface {
+    print: func(msg: string);
+}
+
+world handler-world {
+    export handler-interface;
+    import host-interface;
+}

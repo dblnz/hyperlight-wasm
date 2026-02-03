@@ -38,6 +38,10 @@ build-examples target=default-target features="": (build-wasm-examples target fe
 build-wasm-examples target=default-target features="": (compile-wit) 
     {{ build-wasm-examples-command }} {{target}} {{features}}
 
+build-js-component-examples target=default-target features="":
+    cd ./src/js_component_sample/ && npm run build
+    time cargo run {{ if features =="" {''} else if features=="no-default-features" {"--no-default-features" } else {"--features " + features } }} -p hyperlight-wasm-aot compile {{ if features =~ "gdb" {"--debug"} else {""} }} --component ./src/js_component_sample/handler.wasm ./x64/{{ target }}/js_component_sample.aot
+
 build-rust-wasm-examples target=default-target features="": (mkdir-redist target)
     rustup target add wasm32-unknown-unknown
     cd ./src/rust_wasm_samples && cargo build --target wasm32-unknown-unknown --profile={{ if target == "debug" {"dev"} else { target } }}
