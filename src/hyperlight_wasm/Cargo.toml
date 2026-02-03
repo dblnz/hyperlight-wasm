@@ -40,6 +40,11 @@ path = "examples/hostfuncs/main.rs"
 test = true
 
 [[example]]
+name = "js_component_example"
+path = "examples/js_component_example/main.rs"
+test = true
+
+[[example]]
 name = "rust_wasm_examples"
 path = "examples/rust_wasm_examples/main.rs"
 test = true
