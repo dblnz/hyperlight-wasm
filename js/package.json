@@ -1,0 +1,8 @@
+{
+  "name": "handler-default",
+  "version": "1.0.0",
+  "description": "Default build using upstream jco/componentize-js",
+  "devDependencies": {
+    "@bytecodealliance/jco": "^1.15.4"
+  }
+}

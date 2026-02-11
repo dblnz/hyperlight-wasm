@@ -20,6 +20,15 @@ ensure-tools:
     cargo install wit-bindgen-cli --locked --version 0.43.0
     cargo install cargo-hyperlight --locked
 
+build-js-component:
+    cd js && npm ci && npx jco componentize ./handler.js --wit ./wit/handler.wit -d all -o ../x64/debug/handler.wasm
+    hyperlight-wasm-aot compile --component x64/debug/handler.wasm
+    cp x64/debug/handler.aot x64/release/handler.aot
+    wasm-tools component wit ./js/wit/handler.wit -w -o ./js/handler_wit.wasm
+
+run-js-component:
+    WIT_WORLD="$PWD/js/handler_wit.wasm" cargo run --release --example component_example --features trace_guest
+
 build-all target=default-target features="": (build target features) (build-examples target features) 
 
 build target=default-target features="": (fmt-check)
