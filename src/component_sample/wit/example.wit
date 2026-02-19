@@ -1,17 +1,19 @@
-package component-sample:example;
+package hyperlight:bench;
 
-world example {
-  import host;
-  export adder;
+interface handler-interface {
+    record request {
+        uri: string
+    }
+
+    handleevent: func(event: request) -> request;
+    fib: func(n: s32) -> u64;
 }
 
-interface adder {
-  add: func(left: u32, right: u32) -> u32;
-  call-host: func(input: string) -> string;
-  do-something: func(number: u32);
+interface host-interface {
+    print: func(msg: string);
 }
 
-interface host {
-  print: func(message: string);
-  host-function: func(input: string) -> string;
+world handler-world {
+    export handler-interface;
+    import host-interface;
 }

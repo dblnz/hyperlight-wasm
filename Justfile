@@ -32,13 +32,14 @@ mkdir-redist target=default-target:
 compile-wit:
     wasm-tools component wit ./src/wasmsamples/components/runcomponent.wit -w -o ./src/wasmsamples/components/runcomponent-world.wasm
     wasm-tools component wit ./src/component_sample/wit/example.wit -w -o ./src/component_sample/wit/component-world.wasm
+    wasm-tools component wit ./src/js_component_sample/wit/handler.wit -w -o ./src/js_component_sample/wit/component-world.wasm
 
 build-examples target=default-target features="": (build-wasm-examples target features) (build-rust-wasm-examples target features) (build-rust-component-examples target features)
 
 build-wasm-examples target=default-target features="": (compile-wit) 
     {{ build-wasm-examples-command }} {{target}} {{features}}
 
-build-js-component-examples target=default-target features="":
+build-js-component-examples target=default-target features="": (mkdir-redist target)
     cd ./src/js_component_sample/ && npm run build
     time cargo run {{ if features =="" {''} else if features=="no-default-features" {"--no-default-features" } else {"--features " + features } }} -p hyperlight-wasm-aot compile {{ if features =~ "gdb" {"--debug"} else {""} }} --component ./src/js_component_sample/handler.wasm ./x64/{{ target }}/js_component_sample.aot
 
@@ -52,7 +53,7 @@ build-pulley-rust-wasm-examples target=default-target features="": (mkdir-redist
     cd ./src/rust_wasm_samples && cargo build --target wasm32-unknown-unknown --profile={{ if target == "debug" {"dev"} else { target } }}
     cargo run {{ if features =="" {''} else if features=="no-default-features" {"--no-default-features" } else {"--features " + features } }} -p hyperlight-wasm-aot compile --pulley {{ if features =~ "gdb" {"--debug"} else {""} }} ./src/rust_wasm_samples/target/wasm32-unknown-unknown/{{ target }}/rust_wasm_samples.wasm ./x64/{{ target }}/rust_wasm_samples.aot
 
-build-rust-component-examples target=default-target features="": (compile-wit)
+build-rust-component-examples target=default-target features="": (mkdir-redist target) (compile-wit)
     # use cargo component so we don't get all the wasi imports https://github.com/bytecodealliance/cargo-component?tab=readme-ov-file#relationship-with-wasm32-wasip2
     # we also explicitly target wasm32-unknown-unknown since cargo component might try to pull in wasi imports https://github.com/bytecodealliance/cargo-component/issues/290
     rustup target add wasm32-unknown-unknown

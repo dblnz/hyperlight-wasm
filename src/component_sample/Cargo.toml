@@ -10,11 +10,11 @@ wit-bindgen-rt = { version = "0.44.0", features = ["bitflags"] }
 crate-type = ["cdylib"]
 
 [package.metadata.component]
-package = "component-sample:example"
+package = "hyperlight:bench"
 
 [package.metadata.component.target]
 path = "wit/example.wit"
-world = "example"
+world = "handler-world"
 
 [package.metadata.component.target.dependencies]
 

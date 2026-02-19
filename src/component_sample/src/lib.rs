@@ -2,23 +2,26 @@
 #[rustfmt::skip]
 mod bindings;
 
-use bindings::component_sample::example::host::{host_function, print};
-use bindings::exports::component_sample::example::adder::Guest;
+use bindings::exports::hyperlight::bench::handler_interface;
+use bindings::exports::hyperlight::bench::handler_interface::Guest;
+use bindings::hyperlight::bench::host_interface::print;
 
 struct Component {}
 
 impl Guest for Component {
-    fn add(left: u32, right: u32) -> u32 {
-        left + right
+    fn fib(n: i32) -> u64 {
+        if n == 1 {
+            return 1;
+        } else if n <= 0 {
+            return 0;
+        }
+        Self::fib(n - 1) + Self::fib(n - 2)
     }
-
-    fn call_host(input: String) -> String {
-        let host_result = host_function(&format!("{} from component", &input));
-        host_result.to_string()
-    }
-
-    fn do_something(number: u32) {
-        print(&format!("{number}"));
+    fn handleevent(event: handler_interface::Request) -> handler_interface::Request {
+        print(&format!("Handling event: {}", event.uri));
+        handler_interface::Request {
+            uri: "/redirected.html".to_string(),
+        }
     }
 }
 
