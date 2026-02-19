@@ -6,6 +6,7 @@ interface handler-interface {
     }
 
     handleevent: func(event: request) -> request;
+    fib: func(n: s32) -> u64;
 }
 
 interface host-interface {

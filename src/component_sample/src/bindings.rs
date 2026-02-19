@@ -3,22 +3,21 @@
 //   * runtime_path: "wit_bindgen_rt"
 #[rustfmt::skip]
 #[allow(dead_code, clippy::all)]
-pub mod component_sample {
-    pub mod example {
+pub mod hyperlight {
+    pub mod bench {
         #[allow(dead_code, async_fn_in_trait, unused_imports, clippy::all)]
-        pub mod host {
+        pub mod host_interface {
             #[used]
             #[doc(hidden)]
             static __FORCE_SECTION_REF: fn() = super::super::super::__link_custom_section_describing_imports;
-            use super::super::super::_rt;
             #[allow(unused_unsafe, clippy::all)]
-            pub fn print(message: &str) -> () {
+            pub fn print(msg: &str) -> () {
                 unsafe {
-                    let vec0 = message;
+                    let vec0 = msg;
                     let ptr0 = vec0.as_ptr().cast::<u8>();
                     let len0 = vec0.len();
                     #[cfg(target_arch = "wasm32")]
-                    #[link(wasm_import_module = "component-sample:example/host")]
+                    #[link(wasm_import_module = "hyperlight:bench/host-interface")]
                     unsafe extern "C" {
                         #[link_name = "print"]
                         fn wit_import1(_: *mut u8, _: usize);
@@ -30,88 +29,57 @@ pub mod component_sample {
                     unsafe { wit_import1(ptr0.cast_mut(), len0) };
                 }
             }
-            #[allow(unused_unsafe, clippy::all)]
-            pub fn host_function(input: &str) -> _rt::String {
-                unsafe {
-                    #[cfg_attr(target_pointer_width = "64", repr(align(8)))]
-                    #[cfg_attr(target_pointer_width = "32", repr(align(4)))]
-                    struct RetArea(
-                        [::core::mem::MaybeUninit<
-                            u8,
-                        >; 2 * ::core::mem::size_of::<*const u8>()],
-                    );
-                    let mut ret_area = RetArea(
-                        [::core::mem::MaybeUninit::uninit(); 2
-                            * ::core::mem::size_of::<*const u8>()],
-                    );
-                    let vec0 = input;
-                    let ptr0 = vec0.as_ptr().cast::<u8>();
-                    let len0 = vec0.len();
-                    let ptr1 = ret_area.0.as_mut_ptr().cast::<u8>();
-                    #[cfg(target_arch = "wasm32")]
-                    #[link(wasm_import_module = "component-sample:example/host")]
-                    unsafe extern "C" {
-                        #[link_name = "host-function"]
-                        fn wit_import2(_: *mut u8, _: usize, _: *mut u8);
-                    }
-                    #[cfg(not(target_arch = "wasm32"))]
-                    unsafe extern "C" fn wit_import2(_: *mut u8, _: usize, _: *mut u8) {
-                        unreachable!()
-                    }
-                    unsafe { wit_import2(ptr0.cast_mut(), len0, ptr1) };
-                    let l3 = *ptr1.add(0).cast::<*mut u8>();
-                    let l4 = *ptr1
-                        .add(::core::mem::size_of::<*const u8>())
-                        .cast::<usize>();
-                    let len5 = l4;
-                    let bytes5 = _rt::Vec::from_raw_parts(l3.cast(), len5, len5);
-                    let result6 = _rt::string_lift(bytes5);
-                    result6
-                }
-            }
         }
     }
 }
 #[rustfmt::skip]
 #[allow(dead_code, clippy::all)]
 pub mod exports {
-    pub mod component_sample {
-        pub mod example {
+    pub mod hyperlight {
+        pub mod bench {
             #[allow(dead_code, async_fn_in_trait, unused_imports, clippy::all)]
-            pub mod adder {
+            pub mod handler_interface {
                 #[used]
                 #[doc(hidden)]
                 static __FORCE_SECTION_REF: fn() = super::super::super::super::__link_custom_section_describing_imports;
                 use super::super::super::super::_rt;
-                #[doc(hidden)]
-                #[allow(non_snake_case)]
-                pub unsafe fn _export_add_cabi<T: Guest>(arg0: i32, arg1: i32) -> i32 {
-                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
-                    let result0 = T::add(arg0 as u32, arg1 as u32);
-                    _rt::as_i32(result0)
+                #[derive(Clone)]
+                pub struct Request {
+                    pub uri: _rt::String,
+                }
+                impl ::core::fmt::Debug for Request {
+                    fn fmt(
+                        &self,
+                        f: &mut ::core::fmt::Formatter<'_>,
+                    ) -> ::core::fmt::Result {
+                        f.debug_struct("Request").field("uri", &self.uri).finish()
+                    }
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
-                pub unsafe fn _export_call_host_cabi<T: Guest>(
+                pub unsafe fn _export_handleevent_cabi<T: Guest>(
                     arg0: *mut u8,
                     arg1: usize,
                 ) -> *mut u8 {
                     #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
                     let len0 = arg1;
                     let bytes0 = _rt::Vec::from_raw_parts(arg0.cast(), len0, len0);
-                    let result1 = T::call_host(_rt::string_lift(bytes0));
+                    let result1 = T::handleevent(Request {
+                        uri: _rt::string_lift(bytes0),
+                    });
                     let ptr2 = (&raw mut _RET_AREA.0).cast::<u8>();
-                    let vec3 = (result1.into_bytes()).into_boxed_slice();
-                    let ptr3 = vec3.as_ptr().cast::<u8>();
-                    let len3 = vec3.len();
-                    ::core::mem::forget(vec3);
-                    *ptr2.add(::core::mem::size_of::<*const u8>()).cast::<usize>() = len3;
-                    *ptr2.add(0).cast::<*mut u8>() = ptr3.cast_mut();
+                    let Request { uri: uri3 } = result1;
+                    let vec4 = (uri3.into_bytes()).into_boxed_slice();
+                    let ptr4 = vec4.as_ptr().cast::<u8>();
+                    let len4 = vec4.len();
+                    ::core::mem::forget(vec4);
+                    *ptr2.add(::core::mem::size_of::<*const u8>()).cast::<usize>() = len4;
+                    *ptr2.add(0).cast::<*mut u8>() = ptr4.cast_mut();
                     ptr2
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
-                pub unsafe fn __post_return_call_host<T: Guest>(arg0: *mut u8) {
+                pub unsafe fn __post_return_handleevent<T: Guest>(arg0: *mut u8) {
                     let l0 = *arg0.add(0).cast::<*mut u8>();
                     let l1 = *arg0
                         .add(::core::mem::size_of::<*const u8>())
@@ -120,39 +88,35 @@ pub mod exports {
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
-                pub unsafe fn _export_do_something_cabi<T: Guest>(arg0: i32) {
+                pub unsafe fn _export_fib_cabi<T: Guest>(arg0: i32) -> i64 {
                     #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
-                    T::do_something(arg0 as u32);
+                    let result0 = T::fib(arg0);
+                    _rt::as_i64(result0)
                 }
                 pub trait Guest {
-                    fn add(left: u32, right: u32) -> u32;
-                    fn call_host(input: _rt::String) -> _rt::String;
-                    fn do_something(number: u32) -> ();
+                    fn handleevent(event: Request) -> Request;
+                    fn fib(n: i32) -> u64;
                 }
                 #[doc(hidden)]
-                macro_rules! __export_component_sample_example_adder_cabi {
+                macro_rules! __export_hyperlight_bench_handler_interface_cabi {
                     ($ty:ident with_types_in $($path_to_types:tt)*) => {
                         const _ : () = { #[unsafe (export_name =
-                        "component-sample:example/adder#add")] unsafe extern "C" fn
-                        export_add(arg0 : i32, arg1 : i32,) -> i32 { unsafe {
-                        $($path_to_types)*:: _export_add_cabi::<$ty > (arg0, arg1) } }
-                        #[unsafe (export_name =
-                        "component-sample:example/adder#call-host")] unsafe extern "C" fn
-                        export_call_host(arg0 : * mut u8, arg1 : usize,) -> * mut u8 {
-                        unsafe { $($path_to_types)*:: _export_call_host_cabi::<$ty >
-                        (arg0, arg1) } } #[unsafe (export_name =
-                        "cabi_post_component-sample:example/adder#call-host")] unsafe
-                        extern "C" fn _post_return_call_host(arg0 : * mut u8,) { unsafe {
-                        $($path_to_types)*:: __post_return_call_host::<$ty > (arg0) } }
-                        #[unsafe (export_name =
-                        "component-sample:example/adder#do-something")] unsafe extern "C"
-                        fn export_do_something(arg0 : i32,) { unsafe {
-                        $($path_to_types)*:: _export_do_something_cabi::<$ty > (arg0) } }
-                        };
+                        "hyperlight:bench/handler-interface#handleevent")] unsafe extern
+                        "C" fn export_handleevent(arg0 : * mut u8, arg1 : usize,) -> *
+                        mut u8 { unsafe { $($path_to_types)*::
+                        _export_handleevent_cabi::<$ty > (arg0, arg1) } } #[unsafe
+                        (export_name =
+                        "cabi_post_hyperlight:bench/handler-interface#handleevent")]
+                        unsafe extern "C" fn _post_return_handleevent(arg0 : * mut u8,) {
+                        unsafe { $($path_to_types)*:: __post_return_handleevent::<$ty >
+                        (arg0) } } #[unsafe (export_name =
+                        "hyperlight:bench/handler-interface#fib")] unsafe extern "C" fn
+                        export_fib(arg0 : i32,) -> i64 { unsafe { $($path_to_types)*::
+                        _export_fib_cabi::<$ty > (arg0) } } };
                     };
                 }
                 #[doc(hidden)]
-                pub(crate) use __export_component_sample_example_adder_cabi;
+                pub(crate) use __export_hyperlight_bench_handler_interface_cabi;
                 #[cfg_attr(target_pointer_width = "64", repr(align(8)))]
                 #[cfg_attr(target_pointer_width = "32", repr(align(4)))]
                 struct _RetArea(
@@ -172,6 +136,10 @@ pub mod exports {
 mod _rt {
     #![allow(dead_code, clippy::all)]
     pub use alloc_crate::string::String;
+    #[cfg(target_arch = "wasm32")]
+    pub fn run_ctors_once() {
+        wit_bindgen_rt::run_ctors_once();
+    }
     pub use alloc_crate::vec::Vec;
     pub unsafe fn string_lift(bytes: Vec<u8>) -> String {
         if cfg!(debug_assertions) {
@@ -180,75 +148,35 @@ mod _rt {
             String::from_utf8_unchecked(bytes)
         }
     }
-    #[cfg(target_arch = "wasm32")]
-    pub fn run_ctors_once() {
-        wit_bindgen_rt::run_ctors_once();
-    }
-    pub fn as_i32<T: AsI32>(t: T) -> i32 {
-        t.as_i32()
-    }
-    pub trait AsI32 {
-        fn as_i32(self) -> i32;
-    }
-    impl<'a, T: Copy + AsI32> AsI32 for &'a T {
-        fn as_i32(self) -> i32 {
-            (*self).as_i32()
-        }
-    }
-    impl AsI32 for i32 {
-        #[inline]
-        fn as_i32(self) -> i32 {
-            self as i32
-        }
-    }
-    impl AsI32 for u32 {
-        #[inline]
-        fn as_i32(self) -> i32 {
-            self as i32
-        }
-    }
-    impl AsI32 for i16 {
-        #[inline]
-        fn as_i32(self) -> i32 {
-            self as i32
-        }
-    }
-    impl AsI32 for u16 {
-        #[inline]
-        fn as_i32(self) -> i32 {
-            self as i32
-        }
-    }
-    impl AsI32 for i8 {
-        #[inline]
-        fn as_i32(self) -> i32 {
-            self as i32
-        }
-    }
-    impl AsI32 for u8 {
-        #[inline]
-        fn as_i32(self) -> i32 {
-            self as i32
-        }
-    }
-    impl AsI32 for char {
-        #[inline]
-        fn as_i32(self) -> i32 {
-            self as i32
-        }
-    }
-    impl AsI32 for usize {
-        #[inline]
-        fn as_i32(self) -> i32 {
-            self as i32
-        }
-    }
     pub unsafe fn cabi_dealloc(ptr: *mut u8, size: usize, align: usize) {
         if size == 0 {
             return;
         }
         let layout = alloc::Layout::from_size_align_unchecked(size, align);
         alloc::dealloc(ptr, layout);
+    }
+    pub fn as_i64<T: AsI64>(t: T) -> i64 {
+        t.as_i64()
+    }
+    pub trait AsI64 {
+        fn as_i64(self) -> i64;
+    }
+    impl<'a, T: Copy + AsI64> AsI64 for &'a T {
+        fn as_i64(self) -> i64 {
+            (*self).as_i64()
+        }
+    }
+    impl AsI64 for i64 {
+        #[inline]
+        fn as_i64(self) -> i64 {
+            self as i64
+        }
+    }
+    impl AsI64 for u64 {
+        #[inline]
+        fn as_i64(self) -> i64 {
+            self as i64
+        }
     }
     extern crate alloc as alloc_crate;
     pub use alloc_crate::alloc;
@@ -271,34 +199,34 @@ mod _rt {
 /// ```
 #[allow(unused_macros)]
 #[doc(hidden)]
-macro_rules! __export_example_impl {
+macro_rules! __export_handler_world_impl {
     ($ty:ident) => {
         self::export!($ty with_types_in self);
     };
     ($ty:ident with_types_in $($path_to_types_root:tt)*) => {
         $($path_to_types_root)*::
-        exports::component_sample::example::adder::__export_component_sample_example_adder_cabi!($ty
+        exports::hyperlight::bench::handler_interface::__export_hyperlight_bench_handler_interface_cabi!($ty
         with_types_in $($path_to_types_root)*::
-        exports::component_sample::example::adder);
+        exports::hyperlight::bench::handler_interface);
     };
 }
 #[doc(inline)]
-pub(crate) use __export_example_impl as export;
+pub(crate) use __export_handler_world_impl as export;
 #[cfg(target_arch = "wasm32")]
 #[unsafe(
-    link_section = "component-type:wit-bindgen:0.41.0:component-sample:example:example:encoded world"
+    link_section = "component-type:wit-bindgen:0.41.0:hyperlight:bench:handler-world:encoded world"
 )]
 #[doc(hidden)]
 #[allow(clippy::octal_escapes)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 380] = *b"\
-\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xfe\x01\x01A\x02\x01\
-A\x04\x01B\x04\x01@\x01\x07messages\x01\0\x04\0\x05print\x01\0\x01@\x01\x05input\
-s\0s\x04\0\x0dhost-function\x01\x01\x03\0\x1dcomponent-sample:example/host\x05\0\
-\x01B\x06\x01@\x02\x04lefty\x05righty\0y\x04\0\x03add\x01\0\x01@\x01\x05inputs\0\
-s\x04\0\x09call-host\x01\x01\x01@\x01\x06numbery\x01\0\x04\0\x0cdo-something\x01\
-\x02\x04\0\x1ecomponent-sample:example/adder\x05\x01\x04\0\x20component-sample:e\
-xample/example\x04\0\x0b\x0d\x01\0\x07example\x03\0\0\0G\x09producers\x01\x0cpro\
-cessed-by\x02\x0dwit-component\x070.227.1\x10wit-bindgen-rust\x060.41.0";
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 339] = *b"\
+\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xcf\x01\x01A\x02\x01\
+A\x04\x01B\x02\x01@\x01\x03msgs\x01\0\x04\0\x05print\x01\0\x03\0\x1fhyperlight:b\
+ench/host-interface\x05\0\x01B\x06\x01r\x01\x03uris\x04\0\x07request\x03\0\0\x01\
+@\x01\x05event\x01\0\x01\x04\0\x0bhandleevent\x01\x02\x01@\x01\x01nz\0w\x04\0\x03\
+fib\x01\x03\x04\0\"hyperlight:bench/handler-interface\x05\x01\x04\0\x1ehyperligh\
+t:bench/handler-world\x04\0\x0b\x13\x01\0\x0dhandler-world\x03\0\0\0G\x09produce\
+rs\x01\x0cprocessed-by\x02\x0dwit-component\x070.227.1\x10wit-bindgen-rust\x060.\
+41.0";
 #[inline(never)]
 #[doc(hidden)]
 pub fn __link_custom_section_describing_imports() {

@@ -73,6 +73,8 @@ log = "0.4"
 cfg-if = { version = "1" }
 metrics = "0.24.3"
 env_logger = "0.11.9"
+tracing-tracy = "0.11.4"
+tracing-flame = "0.2.0"
 
 [target.'cfg(windows)'.dependencies]
 windows = { version = "0.62", features = ["Win32_System_Threading"] }
@@ -120,7 +122,9 @@ gdb = ["hyperlight-host/gdb"]
 kvm = ["hyperlight-host/kvm"]
 mshv3 = ["hyperlight-host/mshv3"]
 pulley = []
-trace_guest = ["hyperlight-host/trace_guest"]
+trace_guest = ["hyperlight-host/trace_guest", "hyperlight-host/tracy_guest"]
+tracy = [ "trace_guest" ]
+otel = [ "trace_guest" ]
 
 [[bench]]
 name = "benchmarks"
