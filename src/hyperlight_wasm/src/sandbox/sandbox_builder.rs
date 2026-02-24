@@ -32,6 +32,7 @@ pub const MIN_HEAP_SIZE: u64 = 1024 * 1024;
 #[derive(Clone)]
 pub struct SandboxBuilder {
     config: SandboxConfiguration,
+    scratch_size: Option<usize>,
     host_print_fn: Option<HostFunction<i32, (String,)>>,
 }
 
@@ -45,6 +46,7 @@ impl SandboxBuilder {
 
         Self {
             config,
+            scratch_size: None,
             host_print_fn: None,
         }
     }
@@ -131,7 +133,12 @@ impl SandboxBuilder {
     }
 
     /// Build the ProtoWasmSandbox
-    pub fn build(self) -> Result<ProtoWasmSandbox> {
+    pub fn build(mut self) -> Result<ProtoWasmSandbox> {
+        if let Some(sz) = self.scratch_size {
+            self.config.set_scratch_size(sz);
+        } else {
+            self.config.set_scratch_size(0x100000);
+        }
         if !is_hypervisor_present() {
             return Err(HyperlightError::NoHypervisorFound());
         }

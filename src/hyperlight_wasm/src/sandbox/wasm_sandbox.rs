@@ -41,6 +41,7 @@ pub struct WasmSandbox {
     // Snapshot of state of an initial WasmSandbox (runtime loaded, but no guest module code loaded).
     // Used for LoadedWasmSandbox to be able restore state back to WasmSandbox
     snapshot: Option<Arc<Snapshot>>,
+    needs_restore: bool,
 }
 
 const MAPPED_BINARY_VA: u64 = 0x1_0000_0000u64;
@@ -50,12 +51,13 @@ impl WasmSandbox {
     /// The difference between this function and creating  a `WasmSandbox` directly is that
     /// this function will increment the metrics for the number of `WasmSandbox`es in the system.
     pub(super) fn new(mut inner: MultiUseSandbox) -> Result<Self> {
-        let snapshot = inner.snapshot()?;
+        let snapshot = inner.snapshot(None)?;
         metrics::gauge!(METRIC_ACTIVE_WASM_SANDBOXES).increment(1);
         metrics::counter!(METRIC_TOTAL_WASM_SANDBOXES).increment(1);
         Ok(WasmSandbox {
             inner: Some(inner),
             snapshot: Some(snapshot),
+            needs_restore: false,
         })
     }
 
@@ -64,16 +66,33 @@ impl WasmSandbox {
     /// the snapshot has already been created in that case.
     /// Expects a snapshot of the state where wasm runtime is loaded, but no guest module code is loaded.
     pub(super) fn new_from_loaded(
-        mut loaded: MultiUseSandbox,
+        loaded: MultiUseSandbox,
         snapshot: Arc<Snapshot>,
     ) -> Result<Self> {
-        loaded.restore(snapshot.clone())?;
         metrics::gauge!(METRIC_ACTIVE_WASM_SANDBOXES).increment(1);
         metrics::counter!(METRIC_TOTAL_WASM_SANDBOXES).increment(1);
         Ok(WasmSandbox {
             inner: Some(loaded),
             snapshot: Some(snapshot),
+            needs_restore: true,
         })
+    }
+
+    fn restore_if_needed(&mut self) -> Result<()> {
+        eprintln!("did a restore");
+        if self.needs_restore {
+            self.inner
+                .as_mut()
+                .ok_or(new_error!("WasmSandbox is none"))?
+                .restore(
+                    self.snapshot
+                        .as_ref()
+                        .ok_or(new_error!("Snapshot is none"))?
+                        .clone(),
+                )?;
+            self.needs_restore = false;
+        }
+        Ok(())
     }
 
     /// Load a Wasm module at the given path into the sandbox and return a `LoadedWasmSandbox`
@@ -82,6 +101,7 @@ impl WasmSandbox {
     /// Before you can call guest functions in the sandbox, you must call
     /// this function and use the returned value to call guest functions.
     pub fn load_module(mut self, file: impl AsRef<Path>) -> Result<LoadedWasmSandbox> {
+        self.restore_if_needed();
         let inner = self
             .inner
             .as_mut()
@@ -95,6 +115,14 @@ impl WasmSandbox {
         }
 
         self.finalize_module_load()
+    }
+
+    /// docs
+    pub fn load_from_snapshot(mut self, snapshot: Arc<Snapshot>) -> Result<LoadedWasmSandbox> {
+        let mut sb = self.inner.take().unwrap();
+        sb.restore(snapshot);
+        eprintln!("did a restore (3)");
+        LoadedWasmSandbox::new(sb, self.snapshot.take().unwrap())
     }
 
     /// Load a Wasm module that is currently present in a buffer in
@@ -114,6 +142,7 @@ impl WasmSandbox {
         base: *mut libc::c_void,
         len: usize,
     ) -> Result<LoadedWasmSandbox> {
+        self.restore_if_needed();
         let inner = self
             .inner
             .as_mut()
@@ -126,6 +155,7 @@ impl WasmSandbox {
             flags: MemoryRegionFlags::READ | MemoryRegionFlags::EXECUTE,
             region_type: MemoryRegionType::Heap,
         };
+        eprintln!("did a mapping load");
         if let Ok(()) = unsafe { inner.map_region(&rgn) } {
             inner.call::<()>("LoadWasmModulePhys", (MAPPED_BINARY_VA, len as u64))?;
         } else {

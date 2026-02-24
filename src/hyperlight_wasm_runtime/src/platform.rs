@@ -175,23 +175,46 @@ pub extern "C" fn wasmtime_init_traps(handler: wasmtime_trap_handler_t) -> i32 {
 // The wasmtime_memory_image APIs are not yet supported.
 #[no_mangle]
 pub extern "C" fn wasmtime_memory_image_new(
-    _ptr: *const u8,
-    _len: usize,
+    ptr: *const u8,
+    len: usize,
     ret: &mut *mut c_void,
 ) -> i32 {
-    *ret = core::ptr::null_mut();
+    let new_virt = FIRST_VADDR.fetch_add(0x100_0000_0000, Ordering::Relaxed) as *mut u8;
+    let phys = paging::virt_to_phys(ptr as u64).next().unwrap().phys_base;
+    unsafe {
+        paging::map_region(
+            phys,
+            new_virt,
+            len as u64,
+            vmem::MappingKind::Cow(vmem::CowMapping {
+                readable: true,
+                executable: true,
+            }),
+        );
+        *ret = new_virt as *mut c_void;
+    }
     0
 }
 
 #[no_mangle]
 pub extern "C" fn wasmtime_memory_image_map_at(
-    _image: *mut c_void,
-    _addr: *mut u8,
-    _len: usize,
+    image: *mut c_void,
+    addr: *mut u8,
+    len: usize,
 ) -> i32 {
-    /* This should never be called because wasmtime_memory_image_new
-     * returns NULL */
-    panic!("wasmtime_memory_image_map_at");
+    let phys = paging::virt_to_phys(image as u64).next().unwrap().phys_base;
+    unsafe {
+        paging::map_region(
+            phys,
+            addr,
+            len as u64,
+            vmem::MappingKind::Cow(vmem::CowMapping {
+                readable: true,
+                executable: true,
+            }),
+        );
+    }
+    0
 }
 
 #[no_mangle]
@@ -251,5 +274,17 @@ pub(crate) unsafe fn map_buffer(phys: u64, len: u64) -> NonNull<[u8]> {
         );
         paging::barrier::first_valid_same_ctx();
         NonNull::new_unchecked(core::ptr::slice_from_raw_parts_mut(virt, len as usize))
+    }
+}
+
+pub(crate) unsafe fn unmap_buffer(phys: u64, virt: NonNull<[u8]>, len: u64) {
+    unsafe {
+        paging::map_region(
+            phys,
+            virt.as_ptr() as *mut u8,
+            len,
+            vmem::MappingKind::Unmapped,
+        );
+        // should do a tlbi here but it doesnt really matter at present
     }
 }

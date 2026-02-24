@@ -88,7 +88,7 @@ impl LoadedWasmSandbox {
     /// taken snapshot to recover before taking a new snapshot.
     pub fn snapshot(&mut self) -> Result<Arc<Snapshot>> {
         match &mut self.inner {
-            Some(inner) => inner.snapshot(),
+            Some(inner) => inner.snapshot(None),
             None => log_then_return!("No inner MultiUseSandbox to snapshot"),
         }
     }
@@ -106,6 +106,7 @@ impl LoadedWasmSandbox {
     /// 2. Reset memory to the snapshot state
     /// 3. Allow subsequent [`call_guest_function()`](Self::call_guest_function) calls to succeed
     pub fn restore(&mut self, snapshot: Arc<Snapshot>) -> Result<()> {
+        eprintln!("did a restore (2)");
         match &mut self.inner {
             Some(inner) => inner.restore(snapshot),
             None => log_then_return!("No inner MultiUseSandbox to restore"),
