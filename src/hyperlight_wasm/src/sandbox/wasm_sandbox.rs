@@ -80,7 +80,15 @@ impl WasmSandbox {
     fn restore_if_needed(&mut self) -> Result<()> {
         eprintln!("did a restore");
         if self.needs_restore {
-            self.inner.as_mut().ok_or(new_error!("WasmSandbox is none"))?.restore(self.snapshot.as_ref().ok_or(new_error!("Snapshot is none"))?.clone())?;
+            self.inner
+                .as_mut()
+                .ok_or(new_error!("WasmSandbox is none"))?
+                .restore(
+                    self.snapshot
+                        .as_ref()
+                        .ok_or(new_error!("Snapshot is none"))?
+                        .clone(),
+                )?;
             self.needs_restore = false;
         }
         Ok(())
@@ -113,10 +121,7 @@ impl WasmSandbox {
         let mut sb = self.inner.take().unwrap();
         sb.restore(snapshot);
         eprintln!("did a restore (3)");
-        LoadedWasmSandbox::new(
-            sb,
-            self.snapshot.take().unwrap(),
-        )
+        LoadedWasmSandbox::new(sb, self.snapshot.take().unwrap())
     }
 
     /// Load a Wasm module that is currently present in a buffer in

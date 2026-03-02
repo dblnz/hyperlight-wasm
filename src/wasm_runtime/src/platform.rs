@@ -280,12 +280,7 @@ pub(crate) unsafe fn map_buffer(phys: u64, len: u64) -> NonNull<[u8]> {
 
 pub(crate) unsafe fn unmap_buffer(phys: u64, virt: NonNull<[u8]>, len: u64) {
     unsafe {
-        paging::map_region(
-            phys,
-            virt.as_ptr() as *mut u8,
-            len,
-            MappingKind::Unmapped
-        );
+        paging::map_region(phys, virt.as_ptr() as *mut u8, len, MappingKind::Unmapped);
         // should do a tlbi here but it doesnt really matter at present
     }
 }

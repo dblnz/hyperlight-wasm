@@ -2,6 +2,11 @@
 #![allow(unknown_lints)]
 #![allow(unused_unit)]
 
+use std::error::Error;
+use std::io::stdin;
+use std::sync::{Arc, Mutex};
+use std::thread::{JoinHandle, spawn};
+
 use examples_common::get_wasm_module_path;
 use hyperlight_host::Result as HyperlightResult;
 use opentelemetry::trace::TracerProvider;
@@ -10,17 +15,13 @@ use opentelemetry_otlp::{Protocol, SpanExporter, WithExportConfig};
 use opentelemetry_sdk::Resource;
 use opentelemetry_sdk::trace::SdkTracerProvider;
 use opentelemetry_semantic_conventions::attribute::SERVICE_VERSION;
-use std::error::Error;
-use std::io::stdin;
-use std::sync::{Arc, Mutex};
-use std::thread::{JoinHandle, spawn};
 use tracing::{Level, span};
 use tracing_flame::FlameLayer;
 use tracing_opentelemetry::OpenTelemetryLayer;
-use tracing_subscriber::EnvFilter;
 use tracing_subscriber::layer::SubscriberExt;
+use tracing_subscriber::registry::Registry;
 use tracing_subscriber::util::SubscriberInitExt;
-use tracing_subscriber::{fmt, registry::Registry};
+use tracing_subscriber::{EnvFilter, fmt};
 use uuid::Uuid;
 
 extern crate alloc;

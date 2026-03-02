@@ -91,8 +91,7 @@ fn load_wasm_module_phys(function_call: &FunctionCall) -> Result<Vec<u8>> {
         &*CUR_ENGINE.lock(),
     ) {
         let virt = unsafe { platform::map_buffer(*phys, *len) };
-        let component =
-            unsafe { Component::deserialize_raw(engine, virt)? };
+        let component = unsafe { Component::deserialize_raw(engine, virt)? };
         load_component_common(engine, component)?;
         Ok(get_flatbuffer_result::<()>(()))
     } else {

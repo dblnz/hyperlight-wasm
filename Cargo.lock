@@ -1322,6 +1322,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "841d1cc9bed7f9236f321df977030373f4a4163ae1a7dbfe1a51a2c1a51d9100"
 dependencies = [
  "foldhash 0.2.0",
+ "serde",
+ "serde_core",
 ]
 
 [[package]]
@@ -1461,8 +1463,6 @@ dependencies = [
 [[package]]
 name = "hyperlight-common"
 version = "0.12.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "98f80e9aba9fce2a899c9ff0c62dd39cd479fa2f22ef578faed1d510c5becf94"
 dependencies = [
  "anyhow",
  "flatbuffers",
@@ -1475,8 +1475,6 @@ dependencies = [
 [[package]]
 name = "hyperlight-component-macro"
 version = "0.12.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f217d5bbb0d02c9aac81374c3161af2a3a46a5379a604b0799534762a534d75a"
 dependencies = [
  "env_logger",
  "hyperlight-component-util",
@@ -1485,29 +1483,25 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
- "wasmparser 0.243.0",
+ "wasmparser 0.245.1",
 ]
 
 [[package]]
 name = "hyperlight-component-util"
 version = "0.12.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b9b3299460dc5f39d37b8233c9aad7fc52c9548d96a76d35cdcc4f4f49ff6662"
 dependencies = [
  "itertools 0.14.0",
- "log",
  "prettyplease",
  "proc-macro2",
  "quote",
  "syn",
- "wasmparser 0.243.0",
+ "tracing",
+ "wasmparser 0.245.1",
 ]
 
 [[package]]
 name = "hyperlight-guest-tracing"
 version = "0.12.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "df0f8d1e992b03c778c6c144f94a81060384e823781c84fae6228cba230d449c"
 dependencies = [
  "hyperlight-common",
  "spin",
@@ -1518,8 +1512,6 @@ dependencies = [
 [[package]]
 name = "hyperlight-host"
 version = "0.12.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0f81d712e88785e8860be6b33048fc2c9ad6637864aa50fe95d0037cfa50a4fb"
 dependencies = [
  "anyhow",
  "bitflags 2.11.0",
@@ -1752,9 +1744,9 @@ dependencies = [
 
 [[package]]
 name = "indexmap"
-version = "2.12.1"
+version = "2.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0ad4bb2b565bca0645f4d68c5c9af97fba094e9791da685bf83cb5f3ce74acf2"
+checksum = "7714e70437a7dc3ac8eb7e6f8df75fd8eb422675fc7678aff7364301092b1017"
 dependencies = [
  "equivalent",
  "hashbrown 0.16.1",
@@ -3944,19 +3936,6 @@ dependencies = [
 
 [[package]]
 name = "wasmparser"
-version = "0.243.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f6d8db401b0528ec316dfbe579e6ab4152d61739cfe076706d2009127970159d"
-dependencies = [
- "bitflags 2.11.0",
- "hashbrown 0.15.5",
- "indexmap",
- "semver",
- "serde",
-]
-
-[[package]]
-name = "wasmparser"
 version = "0.244.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "47b807c72e1bac69382b3a6fb3dbe8ea4c0ed87ff5629b8685ae6b9a611028fe"
@@ -3965,6 +3944,19 @@ dependencies = [
  "hashbrown 0.15.5",
  "indexmap",
  "semver",
+]
+
+[[package]]
+name = "wasmparser"
+version = "0.245.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4f08c9adee0428b7bddf3890fc27e015ac4b761cc608c822667102b8bfd6995e"
+dependencies = [
+ "bitflags 2.11.0",
+ "hashbrown 0.16.1",
+ "indexmap",
+ "semver",
+ "serde",
 ]
 
 [[package]]
