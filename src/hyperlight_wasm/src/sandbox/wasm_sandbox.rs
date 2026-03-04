@@ -25,6 +25,7 @@ use super::loaded_wasm_sandbox::LoadedWasmSandbox;
 use crate::sandbox::metrics::{
     METRIC_ACTIVE_WASM_SANDBOXES, METRIC_SANDBOX_LOADS, METRIC_TOTAL_WASM_SANDBOXES,
 };
+use tracing::instrument;
 
 /// A sandbox with just the Wasm engine loaded into memory. `WasmSandbox`es
 /// are not yet ready to execute guest functions.
@@ -49,6 +50,7 @@ impl WasmSandbox {
     /// This function should be used to create a new `WasmSandbox` from a ProtoWasmSandbox.
     /// The difference between this function and creating  a `WasmSandbox` directly is that
     /// this function will increment the metrics for the number of `WasmSandbox`es in the system.
+    #[instrument(err(Debug), skip_all, level = "Info")]
     pub(super) fn new(mut inner: MultiUseSandbox) -> Result<Self> {
         let snapshot = inner.snapshot(None)?;
         metrics::gauge!(METRIC_ACTIVE_WASM_SANDBOXES).increment(1);

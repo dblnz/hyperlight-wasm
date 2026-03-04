@@ -14,4 +14,4 @@ readme = "README.md"
 
 [workspace.dependencies]
 #hyperlight-host = { git = "https://github.com/hyperlight-dev/hyperlight", branch = "lm/cow-wasm-work", default-features = false, features = ["executable_heap", "init-paging"] }
-hyperlight-host = { path= "../hyperlight-2/src/hyperlight_host/", version = "0.12.0", default-features = false, features = ["executable_heap", "init-paging"] }
+hyperlight-host = { git = "https://github.com/dblnz/hyperlight", branch = "hl-wasm-tracing", version = "0.12.0", default-features = false, features = ["executable_heap", "init-paging"] }

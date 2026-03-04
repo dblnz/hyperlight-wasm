@@ -584,6 +584,7 @@ dependencies = [
 [[package]]
 name = "hyperlight-common"
 version = "0.12.0"
+source = "git+https://github.com/dblnz/hyperlight?branch=hl-wasm-tracing#485cfebf3681deb5af826ca34ae0b055bcdda2c7"
 dependencies = [
  "anyhow",
  "flatbuffers",
@@ -610,6 +611,7 @@ dependencies = [
 [[package]]
 name = "hyperlight-guest"
 version = "0.12.0"
+source = "git+https://github.com/dblnz/hyperlight?branch=hl-wasm-tracing#485cfebf3681deb5af826ca34ae0b055bcdda2c7"
 dependencies = [
  "anyhow",
  "flatbuffers",
@@ -622,6 +624,7 @@ dependencies = [
 [[package]]
 name = "hyperlight-guest-bin"
 version = "0.12.0"
+source = "git+https://github.com/dblnz/hyperlight?branch=hl-wasm-tracing#485cfebf3681deb5af826ca34ae0b055bcdda2c7"
 dependencies = [
  "buddy_system_allocator",
  "cc",
@@ -641,6 +644,7 @@ dependencies = [
 [[package]]
 name = "hyperlight-guest-macro"
 version = "0.12.0"
+source = "git+https://github.com/dblnz/hyperlight?branch=hl-wasm-tracing#485cfebf3681deb5af826ca34ae0b055bcdda2c7"
 dependencies = [
  "proc-macro-crate",
  "proc-macro2",
@@ -651,6 +655,7 @@ dependencies = [
 [[package]]
 name = "hyperlight-guest-tracing"
 version = "0.12.0"
+source = "git+https://github.com/dblnz/hyperlight?branch=hl-wasm-tracing#485cfebf3681deb5af826ca34ae0b055bcdda2c7"
 dependencies = [
  "hyperlight-common",
  "spin",

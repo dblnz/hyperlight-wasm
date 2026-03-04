@@ -22,6 +22,7 @@ use super::metrics::{METRIC_ACTIVE_PROTO_WASM_SANDBOXES, METRIC_TOTAL_PROTO_WASM
 use super::sandbox_builder::SandboxBuilder;
 use super::wasm_sandbox::WasmSandbox;
 use crate::build_info::BuildInfo;
+use tracing::instrument;
 
 /// A Hyperlight Sandbox with no Wasm run time loaded and no guest module code loaded.
 /// This is used to register new host functions that can be called by guest code.
@@ -74,6 +75,7 @@ impl ProtoWasmSandbox {
     /// The `LoadedWasmSandbox` can be reverted to a `WasmSandbox` by calling the `unload_runtime` method.
     /// The returned `WasmSandbox` can be then be cached and used to load a different Wasm module.
     ///
+    #[instrument(err(Debug), skip(self), level = "Info")]
     pub fn load_runtime(mut self) -> Result<WasmSandbox> {
         let mut sandbox = match self.inner.take() {
             Some(s) => s.evolve()?,

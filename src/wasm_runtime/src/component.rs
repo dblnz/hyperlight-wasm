@@ -72,7 +72,9 @@ fn load_wasm_module(function_call: &FunctionCall) -> Result<Vec<u8>> {
         &function_call.parameters.as_ref().unwrap()[1],
         &*CUR_ENGINE.lock(),
     ) {
+        let _entered = tracing::span!(tracing::Level::INFO, "Component::deserialize").entered();
         let component = unsafe { Component::deserialize(engine, wasm_bytes)? };
+        _entered.exit();
         load_component_common(engine, component)?;
         Ok(get_flatbuffer_result::<i32>(0))
     } else {
@@ -91,7 +93,9 @@ fn load_wasm_module_phys(function_call: &FunctionCall) -> Result<Vec<u8>> {
         &*CUR_ENGINE.lock(),
     ) {
         let virt = unsafe { platform::map_buffer(*phys, *len) };
+        let _entered = tracing::span!(tracing::Level::INFO, "Component::deserialize_raw").entered();
         let component = unsafe { Component::deserialize_raw(engine, virt)? };
+        _entered.exit();
         load_component_common(engine, component)?;
         Ok(get_flatbuffer_result::<()>(()))
     } else {

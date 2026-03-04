@@ -23,6 +23,7 @@ use hyperlight_common::flatbuffer_wrappers::function_types::{
 use hyperlight_common::flatbuffer_wrappers::guest_error::ErrorCode;
 use hyperlight_guest::error::{HyperlightGuestError, Result};
 use hyperlight_guest_bin::host_comm::call_host_function;
+use tracing::instrument;
 use wasmtime::{Caller, Engine, FuncType, Val, ValType};
 
 use crate::marshal;
@@ -36,6 +37,7 @@ pub(crate) fn get_host_function_details() -> HostFunctionDetails {
     hyperlight_guest_bin::host_comm::get_host_function_details()
 }
 
+#[instrument(skip_all, level = "Info")]
 pub(crate) fn hostfunc_type(d: &HostFunctionDefinition, e: &Engine) -> Result<FuncType> {
     let mut params = Vec::new();
     let mut last_was_vec = false;
@@ -79,6 +81,7 @@ pub(crate) fn hostfunc_type(d: &HostFunctionDefinition, e: &Engine) -> Result<Fu
     Ok(FuncType::new(e, params, results))
 }
 
+#[instrument(skip_all, level = "Info")]
 pub(crate) fn call<T>(
     d: &HostFunctionDefinition,
     mut c: Caller<'_, T>,
@@ -115,6 +118,7 @@ pub(crate) fn call<T>(
     Ok(())
 }
 
+#[instrument(skip_all, level = "Info")]
 fn return_type_from_val(val: &ReturnValue) -> ReturnType {
     match val {
         ReturnValue::Int(_) => ReturnType::Int,

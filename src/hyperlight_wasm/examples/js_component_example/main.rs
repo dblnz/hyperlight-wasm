@@ -163,6 +163,7 @@ fn main() {
             .with_guest_input_buffer_size(10 * 1024)
             .with_guest_heap_size(size)
             .with_guest_stack_size(1 * 1024 * 1024)
+            .with_guest_scratch_size(70 * 1024 * 1024)
             //.with_debugging_enabled(8080)
             .build()
             .unwrap();

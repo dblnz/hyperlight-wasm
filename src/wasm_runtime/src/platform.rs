@@ -22,12 +22,15 @@ use hyperlight_common::vmem::{BasicMapping, CowMapping, MappingKind};
 use hyperlight_guest::prim_alloc::alloc_phys_pages;
 use hyperlight_guest_bin::exception::arch;
 use hyperlight_guest_bin::paging;
+use tracing::instrument;
 
 // Extremely stupid virtual address allocator
 // 0x1_0000_0000 is where the module is
 // we start at
 // 0x100_0000_0000 and go up from there
 static FIRST_VADDR: AtomicU64 = AtomicU64::new(0x100_0000_0000u64);
+
+#[instrument(skip_all, level = "Trace")]
 fn page_fault_handler(
     _exception_number: u64,
     info: *mut arch::ExceptionInfo,
@@ -61,6 +64,7 @@ fn page_fault_handler(
     }
     false
 }
+#[instrument(skip_all, level = "Trace")]
 pub(crate) fn register_page_fault_handler() {
     // On amd64, vector 14 is #PF
     // See AMD64 Architecture Programmer's Manual, Volume 2
@@ -125,6 +129,8 @@ pub extern "C" fn wasmtime_page_size() -> usize {
 type wasmtime_trap_handler_t =
     extern "C" fn(ip: usize, fp: usize, has_faulting_addr: bool, faulting_addr: usize);
 static WASMTIME_REQUESTED_TRAP_HANDLER: AtomicU64 = AtomicU64::new(0);
+
+#[instrument(skip_all, level = "Trace")]
 fn wasmtime_trap_handler(
     exception_number: u64,
     info: *mut arch::ExceptionInfo,
@@ -278,6 +284,7 @@ pub(crate) unsafe fn map_buffer(phys: u64, len: u64) -> NonNull<[u8]> {
     }
 }
 
+#[instrument(skip_all, level = "Trace")]
 pub(crate) unsafe fn unmap_buffer(phys: u64, virt: NonNull<[u8]>, len: u64) {
     unsafe {
         paging::map_region(phys, virt.as_ptr() as *mut u8, len, MappingKind::Unmapped);

@@ -14,9 +14,9 @@ bench = false
 #hyperlight-common = { git = "https://github.com/hyperlight-dev/hyperlight", branch = "lm/cow-wasm-work", default-features = false }
 #hyperlight-guest-bin = { git = "https://github.com/hyperlight-dev/hyperlight", branch = "lm/cow-wasm-work", features = [ "printf" ] }
 #hyperlight-guest = { git = "https://github.com/hyperlight-dev/hyperlight", branch = "lm/cow-wasm-work"  }
-hyperlight-common = { path = "../../../hyperlight-2/src/hyperlight_common/", default-features = false }
-hyperlight-guest-bin = { path = "../../../hyperlight-2/src/hyperlight_guest_bin/", features = [ "printf" ] }
-hyperlight-guest = { path = "../../../hyperlight-2/src/hyperlight_guest/"  }
+hyperlight-common = { git = "https://github.com/dblnz/hyperlight", branch = "hl-wasm-tracing", default-features = false }
+hyperlight-guest-bin = { git = "https://github.com/dblnz/hyperlight", branch = "hl-wasm-tracing", features = [ "printf" ] }
+hyperlight-guest = { git = "https://github.com/dblnz/hyperlight", branch = "hl-wasm-tracing"  }
 wasmtime = { version = "36.0.5", default-features = false, features = [ "runtime", "custom-virtual-memory", "custom-native-signals", "component-model" ] }
 hyperlight-wasm-macro = { path = "../hyperlight_wasm_macro" }
 spin = "0.10.0"
