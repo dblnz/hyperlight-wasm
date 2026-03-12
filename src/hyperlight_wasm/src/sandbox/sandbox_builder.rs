@@ -107,6 +107,7 @@ impl SandboxBuilder {
     /// Values smaller than the default (288 KiB) are ignored.
     pub fn with_guest_scratch_size(mut self, guest_scratch_size: usize) -> Self {
         if guest_scratch_size > MIN_SCRATCH_SIZE {
+            self.scratch_size = Some(guest_scratch_size);
             self.config.set_scratch_size(guest_scratch_size);
         }
         self
